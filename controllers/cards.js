@@ -19,14 +19,14 @@ const createCard = (req, res) => {
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => {
-      if (!card) {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
-        return;
-      }
       res.status(200).send({ data: card });
     })
     .catch((err) => {
-      res.status(500).send({ message: `Ошибка на сервере: ${err}` });
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
+      } else {
+        res.status(500).send({ message: `Ошибка на сервере: ${err}` });
+      }
     });
 };
 

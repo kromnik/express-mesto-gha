@@ -32,14 +32,14 @@ const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => {
-      if (!user) {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
-        return;
-      }
       res.status(200).send(user);
     })
     .catch((err) => {
-      res.status(500).send({ message: `Ошибка на сервере: ${err}` });
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
+      } else {
+        res.status(500).send({ message: `Ошибка на сервере: ${err}` });
+      }
     });
 };
 
