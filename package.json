@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yandex-praktikum/express-mesto-gha.git"
+    "url": "git+https://github.com/kromnik/express-mesto-gha.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/yandex-praktikum/express-mesto-gha/issues"
+    "url": "https://github.com/kromnik/express-mesto-gha/issues"
   },
-  "homepage": "https://github.com/yandex-praktikum/express-mesto-gha#readme",
+  "homepage": "https://github.com/kromnik/express-mesto-gha#readme",
   "devDependencies": {
     "eslint": "^8.21.0",
     "eslint-config-airbnb": "^19.0.4",
