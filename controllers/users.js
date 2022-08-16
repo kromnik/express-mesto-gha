@@ -64,7 +64,7 @@ const updateProfile = (req, res) => {
       res.status(200).send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       } else if (err.statusCode === 404) {
         res.status(err.statusCode).send({ message: 'Пользователь по заданному id отсутствует в базе' });
@@ -87,7 +87,7 @@ const updateAvatar = (req, res) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       } else if (err.statusCode === 404) {
         res.status(err.statusCode).send({ message: 'Пользователь по заданному id отсутствует в базе' });
