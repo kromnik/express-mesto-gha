@@ -55,12 +55,19 @@ const updateProfile = (req, res) => {
   const { name, about } = req.body;
   const ownerId = req.user._id;
   User.findByIdAndUpdate(ownerId, { name, about }, { new: true, runValidators: true })
+    .orFail(() => {
+      const error = new Error();
+      error.statusCode = 404;
+      throw error;
+    })
     .then((user) => {
       res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      } else if (err.statusCode === 404) {
+        res.status(err.statusCode).send({ message: 'Пользователь по заданному id отсутствует в базе' });
       } else {
         res.status(500).send({ message: `Ошибка на сервере: ${err}` });
       }
@@ -71,12 +78,19 @@ const updateAvatar = (req, res) => {
   const { avatar } = req.body;
   const ownerId = req.user._id;
   User.findByIdAndUpdate(ownerId, { avatar }, { new: true, runValidators: true })
+    .orFail(() => {
+      const error = new Error();
+      error.statusCode = 404;
+      throw error;
+    })
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      } else if (err.statusCode === 404) {
+        res.status(err.statusCode).send({ message: 'Пользователь по заданному id отсутствует в базе' });
       } else {
         res.status(500).send({ message: `Ошибка на сервере: ${err}` });
       }
