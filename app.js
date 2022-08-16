@@ -18,11 +18,12 @@ app.use((req, res, next) => {
   req.user = { _id: '62f8e9d9d0f9cccc50c1f450' };
   next();
 });
-app.use((req, res) => {
-  res.status(404).send({ message: 'Страница по указанному маршруту не найдена' });
-});
 
 app.use('/', usersRoutes);
 app.use('/', cardsRoutes);
+
+app.use((req, res) => {
+  res.status(404).send({ message: 'Страница по указанному маршруту не найдена' });
+});
 
 app.listen(PORT);
