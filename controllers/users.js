@@ -15,16 +15,24 @@ const getUsers = (req, res) => {
 };
 
 const getUserById = (req, res) => {
-  User.findById(req.user._id)
+  const { userId } = req.params;
+  User.findById(userId)
+    .orFail(() => {
+      const error = new Error();
+      error.statusCode = 404;
+      throw error;
+    })
     .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'Пользователь по указанному id не найден' });
-        return;
-      }
       res.status(200).send(user);
     })
     .catch((err) => {
-      res.status(500).send({ message: `Ошибка на сервере: ${err}` });
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Пользователь по указанному id не найден' });
+      } else if (err.statusCode === 404) {
+        res.status(err.statusCode).send({ message: 'Пользователь по заданному id отсутствует в базе' });
+      } else {
+        res.status(500).send({ message: `Ошибка на сервере: ${err}` });
+      }
     });
 };
 
@@ -48,17 +56,14 @@ const updateProfile = (req, res) => {
   const ownerId = req.user._id;
   User.findByIdAndUpdate(ownerId, { name, about }, { new: true, runValidators: true })
     .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: `Пользователь по указанному _id: ${user} не найден` });
-        return;
-      }
       res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      } else {
+        res.status(500).send({ message: `Ошибка на сервере: ${err}` });
       }
-      res.status(500).send({ message: `Ошибка на сервере: ${err}` });
     });
 };
 
@@ -67,17 +72,14 @@ const updateAvatar = (req, res) => {
   const ownerId = req.user._id;
   User.findByIdAndUpdate(ownerId, { avatar }, { new: true, runValidators: true })
     .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: `Пользователь по указанному _id: ${user} не найден` });
-        return;
-      }
       res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      } else {
+        res.status(500).send({ message: `Ошибка на сервере: ${err}` });
       }
-      res.status(500).send({ message: `Ошибка на сервере: ${err}` });
     });
 };
 
