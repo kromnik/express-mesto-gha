@@ -29,15 +29,17 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  Card.findByIdAndRemove(cardId)
+  Card.findById(cardId)
     .orFail(() => new Error('NotFound'))
     .then((card) => {
-      if (req.user._id !== card.owner._id) {
+      if (req.user._id !== card.owner.toString()) {
         next(new ForbiddenError('Нельзя удалить карточку другого пользователя'));
+      } else {
+        Card.deleteOne(card)
+          .then(() => {
+            res.send({ message: `Карточка с id ${card.id} удалена` });
+          });
       }
-    })
-    .then((card) => {
-      res.send({ message: `Карточка c id ${card.id} успешно удалена` });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
