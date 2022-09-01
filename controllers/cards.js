@@ -30,7 +30,7 @@ const createCard = (req, res, next) => {
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   Card.findById(cardId)
-    .orFail(() => new Error('NotFound'))
+    .orFail(() => new NotFoundError('Карточка по заданному id отсутствует в базе'))
     .then((card) => {
       if (req.user._id !== card.owner.toString()) {
         next(new ForbiddenError('Нельзя удалить карточку другого пользователя'));
@@ -38,14 +38,13 @@ const deleteCard = (req, res, next) => {
         Card.deleteOne(card)
           .then(() => {
             res.send({ message: `Карточка с id ${card.id} удалена` });
-          });
+          })
+          .catch(next);
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Передан некорректный id карточки'));
-      } else if (err.message === 'NotFound') {
-        next(new NotFoundError('Карточка по заданному id отсутствует в базе'));
       } else {
         next(err);
       }
@@ -59,15 +58,13 @@ const likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => new Error('NotFound'))
+    .orFail(() => new NotFoundError('Карточка по заданному id отсутствует в базе'))
     .then((card) => {
       res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные для постановки лайка'));
-      } else if (err.message === 'NotFound') {
-        next(new NotFoundError('Карточка по заданному id отсутствует в базе'));
       } else {
         next(err);
       }
@@ -81,15 +78,13 @@ const dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => new Error('NotFound'))
+    .orFail(() => new NotFoundError('Карточка по заданному id отсутствует в базе'))
     .then((card) => {
       res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные для снятия лайка'));
-      } else if (err.message === 'NotFound') {
-        next(new NotFoundError('Карточка по заданному id отсутствует в базе'));
       } else {
         next(err);
       }

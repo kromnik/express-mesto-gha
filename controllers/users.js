@@ -18,33 +18,23 @@ const getUsers = (req, res, next) => {
 const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
   User.findById(userId)
-    .orFail(() => new Error('NotFound'))
+    .orFail(() => new NotFoundError('Пользователь по заданному id отсутствует в базе'))
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Передан некорректный id'));
-      } else if (err.message === 'NotFound') {
-        next(new NotFoundError('Пользователь по заданному id отсутствует в базе'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 const getUserById = (req, res, next) => {
   const { userId } = req.params;
   User.findById(userId)
-    .orFail(() => new Error('NotFound'))
+    .orFail(() => new NotFoundError('Пользователь по заданному id отсутствует в базе'))
     .then((user) => {
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Передан некорректный id'));
-      } else if (err.message === 'NotFound') {
-        next(new NotFoundError('Пользователь по заданному id отсутствует в базе'));
       } else {
         next(err);
       }
@@ -82,15 +72,13 @@ const updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   const ownerId = req.user._id;
   User.findByIdAndUpdate(ownerId, { name, about }, { new: true, runValidators: true })
-    .orFail(() => new Error('NotFound'))
+    .orFail(() => new NotFoundError('Пользователь по заданному id отсутствует в базе'))
     .then((user) => {
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
-      } else if (err.message === 'NotFound') {
-        next(new NotFoundError('Пользователь по заданному id отсутствует в базе'));
       } else {
         next(err);
       }
@@ -101,15 +89,13 @@ const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const ownerId = req.user._id;
   User.findByIdAndUpdate(ownerId, { avatar }, { new: true, runValidators: true })
-    .orFail(() => new Error('NotFound'))
+    .orFail(() => new NotFoundError('Пользователь по заданному id отсутствует в базе'))
     .then((user) => {
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
-      } else if (err.message === 'NotFound') {
-        next(new NotFoundError('Пользователь по заданному id отсутствует в базе'));
       } else {
         next(err);
       }
@@ -134,8 +120,7 @@ const login = (req, res, next) => {
     })
     .catch(() => {
       next(new UnauthorizedError('Ошибка авторизации'));
-    })
-    .catch(next);
+    });
 };
 
 module.exports = {

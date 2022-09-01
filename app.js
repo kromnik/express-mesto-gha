@@ -26,6 +26,10 @@ app.post('/signin', validateSignIn, login);
 
 app.use(auth);
 
+app.get('/signout', (req, res) => {
+  res.clearCookie('jwt').send({ message: 'Выход' });
+});
+
 app.use('/', usersRoutes);
 app.use('/', cardsRoutes);
 

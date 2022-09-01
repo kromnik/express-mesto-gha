@@ -4,16 +4,16 @@ const validateSignUp = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/https?:\/\/(\w{3}\.)?[-._~:/?#[\]@!$&'()*+,;=\w]+#?\b/),
+    avatar: Joi.string().pattern(/https?:\/\/(\w{3}\.)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*/),
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
   }),
 });
 
 const validateSignIn = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
   }),
 });
 
@@ -32,14 +32,14 @@ const validateUpdateProfile = celebrate({
 
 const validateUpdateAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().pattern(/https?:\/\/(\w{3}\.)?[-._~:/?#[\]@!$&'()*+,;=\w]+#?\b/),
+    avatar: Joi.string().required().pattern(/https?:\/\/(\w{3}\.)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*/),
   }),
 });
 
 const validateCreateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().pattern(/https?:\/\/(\w{3}\.)?[-._~:/?#[\]@!$&'()*+,;=\w]+#?\b/),
+    link: Joi.string().required().pattern(/https?:\/\/(\w{3}\.)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*/),
   }),
 });
 
