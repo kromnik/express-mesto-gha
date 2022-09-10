@@ -1,6 +1,9 @@
+const { NODE_ENV } = process.env;
+
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const { JWT_SECRET } = require('../utils/secretKey');
 
 const BadRequestError = require('../errors/BadRequestError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
@@ -108,19 +111,30 @@ const login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'some-secret-key',
+        JWT_SECRET,
         { expiresIn: '7d' },
       );
       res
         .cookie('jwt', token, {
           httpOnly: true,
-          sameSite: true,
+          sameSite: false,
+          secure: NODE_ENV === 'production' || false,
         })
         .send({ token });
     })
     .catch(() => {
       next(new UnauthorizedError('Ошибка авторизации'));
     });
+};
+
+const signOut = (req, res) => {
+  res
+    .clearCookie('jwt', {
+      httpOnly: true,
+      sameSite: false,
+      secure: NODE_ENV === 'production' || false,
+    })
+    .send({ message: 'Выход' });
 };
 
 module.exports = {
@@ -131,4 +145,5 @@ module.exports = {
   updateProfile,
   updateAvatar,
   login,
+  signOut,
 };
