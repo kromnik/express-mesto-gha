@@ -117,7 +117,7 @@ const login = (req, res, next) => {
       res
         .cookie('jwt', token, {
           httpOnly: true,
-          sameSite: false,
+          sameSite: 'none',
           secure: NODE_ENV === 'production' || false,
         })
         .send({ token });
@@ -131,7 +131,7 @@ const signOut = (req, res) => {
   res
     .clearCookie('jwt', {
       httpOnly: true,
-      sameSite: false,
+      sameSite: 'none',
       secure: NODE_ENV === 'production' || false,
     })
     .send({ message: 'Выход' });
