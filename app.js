@@ -24,6 +24,10 @@ app.use(
   cors({
     origin: [
       'http://localhost:3010',
+      'https://localhost:3010',
+      'http://api.mestoproject.kiro.nomorepartiesxyz.ru',
+      'https://api.mestoproject.kiro.nomorepartiesxyz.ru',
+      'https://github.com/kromnik',
     ],
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
     preflightContinue: false,
